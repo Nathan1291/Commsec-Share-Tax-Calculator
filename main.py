@@ -1,4 +1,3 @@
-from calculation.calculation import calculate
 
 def main():
         year = int(input("\nWhat is the financial year you want to calculate tax on?: "))
