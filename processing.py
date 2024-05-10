@@ -7,7 +7,7 @@ sale type, either buy or sell records.
 
 
 # Main processing function
-def sort_records():
+def get_sorted_records():
     # reading the raw records
     rawRecordsDf = pd.read_csv("./record/Transactions.csv")
 
@@ -19,8 +19,13 @@ def sort_records():
     buyRecords = pd.DataFrame(columns=["Date","Share", "Price","Units"])
     sellRecords = pd.DataFrame(columns=["Date","Share", "Price","Units"])
 
-    buyRecords = processRecords(buyRecords, rawBuyRecordsDf)
-    sellRecords = processRecords(sellRecords, rawSellRecordsDf)
+    # processes all the records to match the given format
+    buyRecords = process_records(buyRecords, rawBuyRecordsDf)
+    sellRecords = process_records(sellRecords, rawSellRecordsDf)
+
+    # adjusts all variable formats they match their given type
+    buyRecords = define_variables(buyRecords)
+    sellRecords = define_variables(sellRecords)
 
     return buyRecords, sellRecords
 
@@ -28,7 +33,7 @@ def sort_records():
 Processes the raw records of each transaction and adjusts it to a new dataframe
 that contains the date, share name, price and number of units traded
 """
-def processRecords(newRecord, rawRecords):
+def process_records(newRecord, rawRecords):
     # going through each record
     for i in range(len(rawRecords)):
         rawRecord = rawRecords.iloc[i]
@@ -40,12 +45,18 @@ def processRecords(newRecord, rawRecords):
         noOfUnits = int(detailsList[1])
         price = float(detailsList[4])
 
+        if detailsList[0] == 'B':
+            total_amt = rawRecord["Debit($)"]
+        else:
+            total_amt = rawRecord["Credit($)"]
+
         # the data to be added
         recordInfo = pd.DataFrame([{
             "Date": rawRecord["Date"],
             "Share": shareName,
             "Price": price,
-            "Units": noOfUnits
+            "Units": noOfUnits,
+            "Total Value": total_amt
           }])
 
         # adding it to the dataframe
@@ -58,8 +69,22 @@ def processRecords(newRecord, rawRecords):
 
     return newRecord
 
+# Changes the variables from all strings into their respective formats
+# date = datetime
+# share = string
+# price = float
+# units = integer
+def define_variables(records):
+    records["Date"] = pd.to_datetime(records["Date"], format="%d/%m/%Y")
+    records["Share"] = records["Share"].astype(str)
+    records["Price"] = pd.to_numeric(records["Price"])
+    records["Units"] = pd.to_numeric(records["Units"])
+    records["Total Value"] = pd.to_numeric(records["Total Value"])
+
+    return records
+
 def main():
-    print(sort_records())
+    print(get_sorted_records())
 
 if __name__ == "__main__":
     main()
