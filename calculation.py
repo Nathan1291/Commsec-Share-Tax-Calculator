@@ -1,8 +1,9 @@
 from processing import get_sorted_records
-from calculation.helpers import (
+from calculation_helper.helpers import (
      get_FY_sell_transactions,
      getAllShareNames,
-     # calculateTaxableComponents
+     calculateTotalTaxableComponents,
+     calculateNetCapitalChange
 )
 
 from datetime import datetime
@@ -23,12 +24,21 @@ def calculate(finYear):
     # get all the unique share names from the given records
     shareNames = getAllShareNames(FYSellRecords)
 
+    # for each share we sold, calculate the values of each category
     for share in shareNames:
         shareBuyRecords = buyRecords[buyRecords["Share"] == share]
         shareSellRecords = sellRecords[sellRecords["Share"] == share]
 
-        print(shareBuyRecords)
-        print(shareSellRecords)
+        taxableComponents = calculateTotalTaxableComponents(shareBuyRecords, shareSellRecords, finYear)
+
+        totalTaxableComponents["CG > 1 Yr"] += taxableComponents["CG > 1 Yr"]
+        totalTaxableComponents["CG < 1 Yr"] += taxableComponents["CG < 1 Yr"]
+        totalTaxableComponents["CL"] += taxableComponents["CL"]
+
+    # calculate the final change in capital
+    netCapitalChange = calculateNetCapitalChange(totalTaxableComponents)
+
+    return netCapitalChange, totalTaxableComponents
 
 def main():
     calculate(2022)
