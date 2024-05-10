@@ -1,11 +1,20 @@
 from processing import get_sorted_records
+from calculation.helpers import (
+     get_FY_sell_transactions,
+     getAllShareNames,
+     # calculateTaxableComponents
+)
+
 from datetime import datetime
 
 
 """
 main function that calculates the total taxable income due for a given financial year
 """
-def calculate_taxable_income(finYear):
+def calculate(finYear):
+    # Defining Global Variables for total Use
+    totalTaxableComponents = {"CG > 1 Yr": 0,"CG < 1 Yr": 0, "CL": 0}
+
     buyRecords, sellRecords = get_sorted_records()
 
     # gets all the sale transactions associated with that financial year
@@ -16,32 +25,13 @@ def calculate_taxable_income(finYear):
 
     for share in shareNames:
         shareBuyRecords = buyRecords[buyRecords["Share"] == share]
-        shareSellRecords = FYSellRecords[FYSellRecords["Share"] == share]
+        shareSellRecords = sellRecords[sellRecords["Share"] == share]
 
-"""
-extracts all the sell transactions of the given financial year
-"""
-def get_FY_sell_transactions(records, finYear):
-    FYStartDate = datetime(finYear-1, 7, 1)
-    FYEndDate = datetime(finYear, 6, 30)
-
-    newRecord = records[(records["Date"] >= FYStartDate) & (records["Date"] <= FYEndDate)]
-    return newRecord
-
-
-"""
-extracts all the distinct share names, returning it in a set
-"""
-def getAllShareNames(records):
-    allShareNames = set()
-    for i in range(len(records)):
-        allShareNames.add(records.iloc[i]["Share"])
-    return allShareNames
-
-
+        print(shareBuyRecords)
+        print(shareSellRecords)
 
 def main():
-    calculate_taxable_income(2022)
+    calculate(2022)
 
 
 if __name__ == "__main__":
