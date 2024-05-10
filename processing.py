@@ -45,10 +45,7 @@ def process_records(newRecord, rawRecords):
         noOfUnits = int(detailsList[1])
         price = float(detailsList[4])
 
-        if detailsList[0] == 'B':
-            total_amt = rawRecord["Debit($)"]
-        else:
-            total_amt = rawRecord["Credit($)"]
+        total_amt = rawRecord["Debit($)"] if detailsList[0] == 'B' else rawRecord["Credit($)"]
 
         # the data to be added
         recordInfo = pd.DataFrame([{
