@@ -94,7 +94,7 @@ def calculateTotalTaxableComponents(buyRecords, sellRecords, finYear):
 
                     # add the transaction to the records with the related information, used up all buy units therefore no use in messing with fees
                     buyTransactionRecords = pd.concat([
-                        buyTransactionRecords if not buyTransactionRecords.empty else none,
+                        buyTransactionRecords if not buyTransactionRecords.empty else None,
                         transactionInfo
                     ])
 
@@ -114,17 +114,16 @@ def calculateTotalTaxableComponents(buyRecords, sellRecords, finYear):
             while remainingUnits > 0:
                 # find the current buy record and its information
                 buyTransaction = buyRecords.iloc[buyRecordTracker]
-                buyTransactionDate = buyTransaction["Date"]
-                buyTransactionUnits = buyTransaction["Units"]
+                buyUnits = buyTransaction["Units"]
 
                 # if the buy transaction is fully exhausted on the sell transaction, use all units and move to the next transaction
-                if remainingUnits >= buyTransactionUnits:
-                    remainingUnits -= buyTransactionUnits
+                if remainingUnits >= buyUnits:
+                    remainingUnits -= buyUnits
                     buyRecordTracker -= 1
 
                 # if the buy transaction is not fully exhausted on the sell transaction, use up all units and deduct the appropriate fee
-                elif remainingUnits < buyTransactionUnits:
-                    unitDifference = buyTransactionUnits - remainingUnits
+                elif remainingUnits < buyUnits:
+                    unitDiff = buyUnits - remainingUnits
                     remainingUnits = 0
                     # changing the values of the original dataframe to make the fees associated with transactions match up
                     buyRecords.at[buyRecordTracker, "Total Value"] = buyRecords.iloc[buyRecordTracker]["Total Value"] * (unitDiff / buyUnits)
