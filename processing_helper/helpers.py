@@ -47,10 +47,12 @@ price = float
 units = integer
 """
 def define_variables(records):
-    records["Date"] = pd.to_datetime(records["Date"], format="%d/%m/%Y")
-    records["Share"] = records["Share"].astype(str)
-    records["Price"] = pd.to_numeric(records["Price"])
-    records["Units"] = pd.to_numeric(records["Units"])
-    records["Total Value"] = pd.to_numeric(records["Total Value"])
+    # cant change the values if the array is empty
+    if len(records.index) != 0:
+        records["Date"] = pd.to_datetime(records["Date"], format="%d/%m/%Y")
+        records["Share"] = records["Share"].astype(str)
+        records["Price"] = pd.to_numeric(records["Price"])
+        records["Units"] = pd.to_numeric(records["Units"])
+        records["Total Value"] = pd.to_numeric(records["Total Value"])
 
     return records
