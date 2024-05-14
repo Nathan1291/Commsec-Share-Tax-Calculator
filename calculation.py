@@ -29,6 +29,9 @@ def calculate(finYear):
         shareBuyRecords = buyRecords[buyRecords["Share"] == share]
         shareSellRecords = sellRecords[sellRecords["Share"] == share]
 
+        shareBuyRecords = shareBuyRecords.reset_index(drop=True)
+        shareSellRecords = shareSellRecords.reset_index(drop=True)
+
         taxableComponents = calculateTotalTaxableComponents(shareBuyRecords, shareSellRecords, finYear)
 
         totalTaxableComponents["CG > 1 Yr"] += taxableComponents["CG > 1 Yr"]
